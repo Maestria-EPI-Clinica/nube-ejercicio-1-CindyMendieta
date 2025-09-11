@@ -1,0 +1,40 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: cargar_datos
+      id: cargar_datos
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: cargar_datos
+        setup-command: pip install -r requirements.txt
+        command: python3 test_cargar_datos.py
+        timeout: 10
+        max-score: 25
+    - name: nube_palabras
+      id: nube_palabras
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: nube_palabras
+        setup-command: pip install -r requirements.txt
+        command: python3 test_nube.py
+        timeout: 10
+        max-score: 25
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        CARGAR_DATOS_RESULTS: "${{steps.cargar_datos.outputs.result}}"
+        NUBE_PALABRAS_RESULTS: "${{steps.nube_palabras.outputs.result}}"
+      with:
+        runners: cargar_datos,nube_palabras
