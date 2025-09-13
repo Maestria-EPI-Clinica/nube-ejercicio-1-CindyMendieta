@@ -10,11 +10,10 @@ def cargar_datos(ruta_archivo):
     return datos
     
 
-def generar_nube_palabras(ruta_archivo, column_texto, ruta_salida):
+def generar_nube_palabras(datos, columna_texto, ruta_salida):
     """Genera una nube de palabras a partir del texto proporcionado."""
 
     ## INICIO - COMPLETAR CODIGO
-    datos = pd.read_csv(ruta_archivo)
     # Concatenar todo el texto de la columna especificada
     texto = " ".join(datos[column_texto].dropna().astype(str))
     ## FIN - COMPLETAR CODIGO
@@ -31,5 +30,6 @@ if __name__ == "__main__":
     columna_texto = 'expectativa'      # Cambia esto por el nombre de la columna que contiene el texto
     ruta_salida = 'nube_palabras.png'  # Ruta donde se guardará la imagen de la nube de palabras
 
-    generar_nube_palabras(ruta_archivo, columna_texto, ruta_salida)
+    df = cargar_datos(ruta_archivo)
+    generar_nube_palabras(df, columna_texto, ruta_salida)
     print(f"Nube de palabras guardada en {ruta_salida}")
