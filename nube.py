@@ -10,7 +10,7 @@ def cargar_datos(ruta_archivo):
     return datos
     
 
-def generar_nube_palabras(ruta_archivo, column_texto, ruta_salida):
+def generar_nube_palabras(datos, column_texto, ruta_salida):
     """Genera una nube de palabras a partir del texto proporcionado."""
 
     ## INICIO - COMPLETAR CODIGO
