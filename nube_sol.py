@@ -1,29 +1,48 @@
 import pandas as pd
-from wordcloud import WordCloud
+from wordcloud import WordCloud, STOPWORDS
 import matplotlib.pyplot as plt
 
-def cargar_datos(ruta_archivo):
-    """Carga los datos desde un archivo CSV."""
-    return pd.read_csv(ruta_archivo)
+def generate_word_cloud_from_csv(csv_path, text_column):
+    """
+    Loads a CSV file, extracts text from a specified column, and generates a word cloud.
 
-def generar_nube_palabras(df, column_name, ruta_salida):
-    """Genera una nube de palabras a partir del texto proporcionado."""
+    Args:
+        csv_path (str): The path to the CSV file.
+        text_column (str): The name of the column containing the text data.
+    """
+    try:
+        df = pd.read_csv(csv_path,sep=";")
 
-    # Concatenar todo el texto de la columna especificada
-    texto = " ".join(df[column_name].dropna().astype(str))
+        if text_column not in df.columns:
+            print(f"Error: Column '{text_column}' not found in the CSV file.")
+            return
 
-    nube = WordCloud(width=800, height=400, background_color='white').generate(texto)
-    plt.figure(figsize=(10, 5))
-    plt.imshow(nube, interpolation='bilinear')
-    plt.axis('off')
-    plt.savefig(ruta_salida)
-    plt.close()
+        # Combine all text from the specified column into a single string
+        text = " ".join(df[text_column].astype(str).tolist())
 
-if __name__ == "__main__":
-    ruta_archivo = 'expectativas.csv'  # Cambia esto por la ruta de tu archivo CSV
-    columna_texto = 'expectativa'      # Cambia esto por el nombre de la columna que contiene el texto
-    ruta_salida = 'nube_palabras.png'  # Ruta donde se guardará la imagen de la nube de palabras
+        # Create a set of stopwords
+        stopwords = set(STOPWORDS)
 
-    df = cargar_datos(ruta_archivo)
-    generar_nube_palabras(df, columna_texto, ruta_salida)
-    print(f"Nube de palabras guardada en {ruta_salida}")
+        # Add Spanish articles to the stopwords
+        spanish_articles = {"el", "de", "se", "para", "en", "la", "los", "las", "un", "una", "unos", "unas"}
+        stopwords.update(spanish_articles)
+
+
+        # Generate the word cloud
+        wordcloud = WordCloud(width = 800, height = 800,
+                              background_color ='white',
+                              stopwords = stopwords,
+                              min_font_size = 10).generate(text)
+
+        # display the word cloud
+        plt.figure(figsize = (8, 8), facecolor = None)
+        plt.imshow(wordcloud)
+        plt.axis("off")
+        plt.tight_layout(pad = 0)
+
+        plt.show()
+
+    except FileNotFoundError:
+        print(f"Error: CSV file not found at '{csv_path}'")
+    except Exception as e:
+        print(f"An error occurred: {e}")
